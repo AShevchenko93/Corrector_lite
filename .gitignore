@@ -21,6 +21,23 @@ $RECYCLE.BIN/
 # Operating System Files
 # =========================
 
+*.vcxproj
+*.filters
+*.log
+*.obj
+*.tlog
+*.idb
+*.ink
+*.pbd
+*.exe
+*.metagen
+*.lastbuildstate
+*.cashe
+*.Cashe
+*.resources
+*.resx
+*.asm
+
 # OSX
 # =========================
 
