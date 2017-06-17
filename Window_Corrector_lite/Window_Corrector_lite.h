@@ -114,6 +114,6 @@ namespace Window_Corrector_lite {
 			word = "";
 		}
 	}
-
+	//��� ����
 	};
 }
