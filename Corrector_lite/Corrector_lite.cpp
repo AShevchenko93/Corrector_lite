@@ -62,55 +62,90 @@ void Corrector_lite::Create_dictionary()
 }
 
 
-vector<suggest> Corrector_lite::Find(const wchar_t *word,int length_word)
+vector<vector<suggest>> Corrector_lite::Find(const wchar_t *word,int length_word)
 {
 	vector<suggest> find_word;
 	vector<answer> position;
+	vector<vector<suggest>> find_words;
 	int n = dictionary.size();
 	vector<int> pos;
-	for (int i = 0; i < n; i++)
+	vector<suggest> pos_word;
+	int size = 0;
+	bool first = true;
+	for (int i = 0; i < length_word; i++)
 	{
-		int k = dictionary[i].length;
-		if ((k - 2) < length_word && (k + 2) > length_word)
+		if (!iswblank(word[i]))
 		{
-			bool flag = false;
-			int temporary_weight = 0;
-			for (int j = 0; j < length_word && j < k; j++)
+			if (first)
 			{
-				wchar_t *test_word = dictionary[i].word;
-				if ((*(test_word + j)) == word[j])//тут +1 к индексу text если считывалось с файла
+				size++;
+				pos_word.resize(size);
+				pos_word[size - 1].word = &(wchar_t)word[i];
+				pos_word[size - 1].length++;
+				first = false;
+			}
+			else
+			{
+				pos_word[size - 1].length++;
+			}
+		}
+		else
+		{
+			first = true;
+		}
+	}
+	find_words.clear();
+	find_words.resize(number_find_word);
+	for (int p = 0; p < pos_word.size(); p++)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			int k = dictionary[i].length;
+
+			if ((k - 2) < pos_word[p].length && (k + 2) > pos_word[p].length)
+			{
+				bool flag = false;
+				int temporary_weight = 0;
+				for (int j = 0; j < pos_word[p].length && j < k; j++)
 				{
-					temporary_weight++;
-					flag = true;
+					wchar_t *test_word = dictionary[i].word;
+					if ((*(test_word + j)) == pos_word[p].word[j])//тут +1 к индексу text если считывалось с файла
+					{
+						temporary_weight++;
+						flag = true;
+					}
+				}
+				if (flag)
+				{
+					answer qw;
+					qw.pos = i;
+					qw.weght = temporary_weight;
+					position.push_back(qw);
 				}
 			}
-			if (flag)
-			{
-				answer qw;
-				qw.pos = i;
-				qw.weght = temporary_weight;
-				position.push_back(qw);
-			}
 		}
-	}
-	if (position.size() > 0)
-	{
-		sort(position.begin(), position.end());
-		if (number_find_word < position.size())
-			position.resize(number_find_word);
-		find_word.clear();
-		for (int i = 0; i < position.size(); i++)
+		if (position.size() > 0)
 		{
-			float chance;
-			chance = (float)position[i].weght / (float)dictionary[position[i].pos].length;
-			if (chance > 0.6)
+			sort(position.begin(), position.end());
+			if (number_find_word < position.size())
+				position.resize(number_find_word);
+			find_word.clear();
+			int k = 0;
+			for (int i = 0; i < position.size(); i++)
 			{
-				find_word.push_back(dictionary[position[i].pos]);
+				float chance;
+				
+				chance = (float)position[i].weght / (float)dictionary[position[i].pos].length;
+				if (chance > 0.6)
+				{
+					find_words[k].push_back(dictionary[position[i].pos]);
+					k++;
+				}
 			}
+			position.clear();
 		}
-		position.clear();
 	}
-	return find_word;
+	return find_words;
 }
 
 

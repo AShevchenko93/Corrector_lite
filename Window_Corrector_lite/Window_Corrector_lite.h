@@ -101,15 +101,21 @@ namespace Window_Corrector_lite {
 		vector<wchar_t> text1;
 		pin_ptr<const wchar_t> wch = PtrToStringChars(text);
 		const wchar_t *qwer = wch;
-		vector<suggest> answer;
+		vector<vector<suggest>> answer;
 		answer = base->Find(qwer, text->Length);
 		text1.clear();
-		String^ word;
+		String^ word="";
 		Show_answer->Items->Clear();
 		for (int i = 0; i < answer.size(); i++)
 		{
-			for (int j = 0; j < answer[i].length; j++)
-				word += answer[i].word[j];
+			for (int j = 0; j < answer[i].size(); j++)
+			{
+				for (int k = 0; k < answer[i][j].length; k++)
+				{
+					word += answer[i][j].word[k];
+				}
+				word += " ";
+			}
 			Show_answer->Items->Add(word);
 			word = "";
 		}

@@ -33,7 +33,7 @@ public:
 	Corrector_lite();
 	void open(const char *);
 	void Create_dictionary();
-	vector<suggest> Find(const wchar_t *,int);
+	vector<vector<suggest>> Find(const wchar_t *,int);
 	void Sort_answer(vector<answer>);
 	~Corrector_lite();
 private:
